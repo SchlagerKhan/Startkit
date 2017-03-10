@@ -90,6 +90,7 @@ gulp.task('upload', ['clean:dist', 'build'], () => {
 	return gulp.src(src)
 		.pipe(rsync({
 			root: '',
+	// 		hostname: 'admin@domain.com',
 			destination: '../../var/www/' + dest,
 			archive: true,
 			compress: true,
