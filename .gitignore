@@ -1,0 +1,9 @@
+node_modules
+.DS_Store
+dist
+build
+static/images
+*.log
+coverage
+.idea
+.env
