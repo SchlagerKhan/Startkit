@@ -70,7 +70,7 @@ function saveDevJSON () {
 			const newData = JSON.stringify(_newData, null, 4);
 			const oldData = fs.readFileSync(path, 'utf8');
 
-			// Check if the data has changed. This is necessary since we cannot yet make webpack ignore certain files in the watching process
+			// Checks if the data has changed. This is necessary since we cannot yet make webpack ignore certain files in the watching process
 			if (oldData !== newData) {
 				fs.writeFile(path, newData, 'utf8');
 			}
@@ -79,7 +79,6 @@ function saveDevJSON () {
 function getInitialData () {
 	const arr = [1, 2, 3];
 	const obj = {one: 1, two: 2, three: 3};
-
 
 	const format1 = db.format('SELECT ? --- # --- #prop --- :UPDATE --- :AND --- :OR --- ? --- \\?', ['hej', arr, arr, obj, obj, obj, 'hej']);
 	const format2 = db.format('SELECT \\? --- \\# --- \\#prop --- ? --- # --- ?', ['hej', ['hej', 'hej'], 'hej']);
