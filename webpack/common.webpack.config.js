@@ -38,25 +38,23 @@ const common = {
 				{
 					test: /\.js?$/,
 					exclude: /node_modules/,
-					loader: 'babel-loader'
+					use: 'babel-loader'
 				},
 				{
 					test: /\.json?$/,
-					loader: 'json-loader'
+					use: 'json-loader'
+				},
+				{
+					test: /\.txt$/,
+					use: 'raw-loader',
 				},
 				{
 					test: /\.(woff|woff2|eot|ttf)$/,
-					loader: 'file-loader',
-					query: {
-						name: 'font/[name].[ext]'
-					}
+					use: 'file-loader?name=font/[name].[ext]'
 				},
 				{
 					test: /\.pdf$/,
-					loader: 'file-loader',
-					query: {
-						name: 'documents/[name].[ext]'
-					}
+					use: 'file-loader?name=documents/[name].[ext]'
 				}
 			]
 		},
@@ -93,6 +91,7 @@ const common = {
 			new webpack.DefinePlugin({
 				'process.env': {
 					NODE_ENV: JSON.stringify(NODE_ENV),
+					NODE_IS_DEV: JSON.stringify(isDev),
 					NODE_SOURCE: JSON.stringify(NODE_SOURCE),
 					NODE_PORT: JSON.stringify(isDev ? ports.dev : ports.prod),
 					NODE_SERVER_RENDERING: JSON.stringify(NODE_SERVER_RENDERING)
@@ -116,7 +115,12 @@ const common = {
 			publicPath: false,
 			reasons: false,
 			source: false,
-		}
+		},
+
+		watchOptions: {
+			aggregateTimeout: 300,
+			// poll: true
+		},
 	}
 };
 
@@ -132,16 +136,16 @@ function getEnvConfig () {
 				rules: [
 					{
 						test: /\.css$/,
-						loader: ExtractTextPlugin.extract({
-							fallbackLoader: 'style-loader',
-							loader: 'css-loader?minimize'
+						use: ExtractTextPlugin.extract({
+							fallback: 'style-loader',
+							use: 'css-loader?minimize'
 						})
 					},
 					{
 						test: /\.scss$/,
-						loader: ExtractTextPlugin.extract({
-							fallbackLoader: 'style-loader',
-							loader: 'css-loader?minimize&modules&camelCase&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!sass-loader'
+						use: ExtractTextPlugin.extract({
+							fallback: 'style-loader',
+							use: 'css-loader?minimize&modules&camelCase&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!sass-loader'
 						})
 					}
 				]
@@ -161,16 +165,16 @@ function getEnvConfig () {
 			rules: [
 				{
 					test: /\.css$/,
-					loader: ExtractTextPlugin.extract({
-						fallbackLoader: 'style-loader',
-						loader: 'css-loader?minimize'
+					use: ExtractTextPlugin.extract({
+						fallback: 'style-loader',
+						use: 'css-loader?minimize'
 					})
 				},
 				{
 					test: /\.scss$/,
-					loader: ExtractTextPlugin.extract({
-						fallbackLoader: 'style-loader',
-						loader: 'css-loader?minimize&modules&camelCase=dashes&importLoaders=1&localIdentName=[hash:base64:5]!sass-loader'
+					use: ExtractTextPlugin.extract({
+						fallback: 'style-loader',
+						use: 'css-loader?minimize&modules&camelCase=dashes&importLoaders=1&localIdentName=[hash:base64:5]!sass-loader'
 
 					})
 				}

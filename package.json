@@ -22,12 +22,14 @@
     "eslint": "^3.17.1",
     "eslint-plugin-react": "^6.10.0",
     "extract-text-webpack-plugin": "^2.1.0",
+    "file-loader": "^0.10.1",
     "gulp": "^3.9.1",
     "gulp-rsync": "^0.0.7",
     "html-webpack-plugin": "^2.28.0",
     "json-loader": "^0.5.4",
     "node-sass": "^4.5.0",
     "nodemon": "^1.11.0",
+    "raw-loader": "^0.5.1",
     "rimraf": "^2.6.1",
     "sass-loader": "^6.0.3",
     "style-loader": "^0.13.2",
@@ -36,6 +38,7 @@
     "webpack-merge": "^4.0.0"
   },
   "dependencies": {
+    "base64-xor": "^0.10.0",
     "body-parser": "^1.17.1",
     "classnames": "^2.2.5",
     "cors": "^2.8.1",

@@ -30,3 +30,6 @@ const config = {
 };
 
 module.exports = merge.smart(common.config, config);
+
+
+console.log(path.resolve('app'));

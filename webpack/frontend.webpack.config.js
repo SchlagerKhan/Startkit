@@ -7,19 +7,14 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const common = require('./common.webpack.config.js');
 
 const config = {
-	output: {
-
-	},
-
 	plugins: [
 		new HtmlWebpackPlugin({ // For production
 			template: 'static/index.ejs',
 			filename: 'index.ejs',
 			inject: false,
-			
+
 			title: 'React Server Rendering Boilerplate',
 			markup: '<%- markup %>',
-			data: '<%- JSON.stringify(data || {}) %>',
 			source: common.SOURCE
 		}),
 		new HtmlWebpackPlugin({  // For dev-server

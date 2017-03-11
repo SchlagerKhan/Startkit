@@ -62,7 +62,7 @@ gulp.task('watch:frontend', () => {
 	).listen(devServerConfig.port, 'localhost', onBuild());
 });
 gulp.task('watch:backend', () => {
-	webpack(backendConfig).watch(100, onBuild(() => {
+	webpack(backendConfig).watch(backendConfig.watchOptions, onBuild(() => {
 		nodemon.restart();
 	}));
 });
