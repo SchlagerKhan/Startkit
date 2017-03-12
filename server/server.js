@@ -17,7 +17,7 @@ const server = express();
 
 const source = process.env.NODE_SOURCE;
 const isDev = process.env.NODE_IS_DEV;
-const port = process.env.NODE_PORT || 7000;
+const port = process.env.NODE_PORT;
 
 db.connectFromSource().then(initServer);
 

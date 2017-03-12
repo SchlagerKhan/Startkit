@@ -106,28 +106,31 @@ function setConfig (connection) {
 	connection.connection.config.queryFormat = (queryText, values) => { // Double connection since we use promise-mysql
 		if (!values) return queryText;
 
-		let newQuery = queryText;
-		const regex = /(\s\?|\s#\s|\s#\w+|:UPDATE|:AND|:OR)/g;
+		let newQuery = queryText.replace(/\\\?/g, '|Q|').replace(/\\#/g, '|H|');
+		const regex = /(\?|#\w+|#|:UPDATE|:AND|:OR)/g;
+
+		// console.log(newQuery);
 
 		let _match;
 		let vIndex = 0;
-		while ((_match = regex.exec(queryText)) !== null) { // eslint-disable-line
+		while ((_match = regex.exec(newQuery)) !== null) { // eslint-disable-line
 		    if (_match.index === regex.lastIndex) regex.lastIndex++; // This is necessary to avoid infinite loops with zero-width matches
 
 			const match = _.findLast(_match);
-			const key = match.trim();
 			const value = values[vIndex];
 
-			if (!value) throw new Error('Not enought values for the matches made', queryText, match);
+			// console.log(match, value);
+
+			if (value === undefined) throw new Error('Not enought values for the matches made', queryText, match);
 
 			let safeType;
-			if (_.startsWith(key, ':')) safeType = 'object';
-			else if (_.startsWith(key, '#')) safeType = 'array';
+			if (_.startsWith(match, ':')) safeType = 'object';
+			else if (_.startsWith(match, '#')) safeType = 'array';
 
 			if (!safeQuery(value, safeType)) throw new Error(`Faulty query-value pair: ${match}, ${value} (supposed to be: ${safeType}), ${queryText}`);
 
 			let insertStr;
-			switch (key) {
+			switch (match) {
 				case ':UPDATE':
 					insertStr = mapProps(value).join(', ');
 					break;
@@ -144,8 +147,8 @@ function setConfig (connection) {
 					insertStr = value;
 					break;
 				default:
-					if (_.startsWith(key, '#')) {
-						const prop = key.replace('#', '').trim();
+					if (_.startsWith(match, '#')) {
+						const prop = match.replace('#', '').trim();
 						insertStr = value.map(val => `${prop}=${val}`).join(' OR ');
 					}
 					break;
@@ -153,12 +156,15 @@ function setConfig (connection) {
 			}
 
 			if (insertStr) {
-				newQuery = newQuery.replace(match, ` ${insertStr} `);
+				newQuery = newQuery.replace(match, insertStr);
 			}
 
 			vIndex++;
 		}
 
+		newQuery = newQuery.replace(/\|Q\|/g, '?').replace(/\|H\|/g, '#');
+
+		// console.log(newQuery);
 		return newQuery;
 	};
 

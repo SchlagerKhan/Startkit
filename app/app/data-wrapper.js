@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from 'react';
-// import xor from 'base64-xor';
 
 export default class DataWrapper extends Component {
 	static childContextTypes = {

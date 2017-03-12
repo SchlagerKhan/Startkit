@@ -71,6 +71,8 @@ const common = {
 				'server-helper': path.resolve('./server/misc/helper'),
 				'server-globals': path.resolve('./server/misc/globals'),
 
+				modules: path.resolve('./server/modules'),
+
 				// APP
 				component: path.resolve('./app/components'),
 				components: path.resolve('./app/components/components.js'),
