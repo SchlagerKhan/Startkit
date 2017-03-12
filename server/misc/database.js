@@ -141,15 +141,15 @@ function setConfig (connection) {
 					insertStr = mapProps(value).join(' OR ');
 					break;
 				case '#':
-					insertStr = value.join(', ');
+					insertStr = value.map(val => escape(val)).join(', ');
 					break;
 				case '?':
-					insertStr = value;
+					insertStr = escape(value);
 					break;
 				default:
 					if (_.startsWith(match, '#')) {
 						const prop = match.replace('#', '').trim();
-						insertStr = value.map(val => `${prop}=${val}`).join(' OR ');
+						insertStr = value.map(val => `${prop}=${escape(val)}`).join(' OR ');
 					}
 					break;
 
@@ -171,7 +171,7 @@ function setConfig (connection) {
 	return connection;
 
 	function mapProps (values) {
-		return _.values(_.mapValues(values, (value, key) => `${key}=${value}`));
+		return _.values(_.mapValues(values, (value, key) => `${key}=${escape(value)}`));
 	}
 	function safeQuery (value, type) {
 		if (type === 'array' && !Array.isArray(value)) return false;
@@ -189,7 +189,7 @@ function use (database = state.primaryDatabase) {
 	return db;
 }
 function getDb (possConnection) {
-	return possConnection.MODES ? use() : possConnection; // Checks if the possConnection the global this-object, if so it returns the primary mode db (through use), otherwise it is hopefully an mysql-connection
+	return (!possConnection || possConnection.MODES) ? use() : possConnection; // Checks if the possConnection the global this-object, if so it returns the primary mode db (through use), otherwise it is hopefully an mysql-connection
 }
 
 // All following functions has the ability to be bound to a connection variable
