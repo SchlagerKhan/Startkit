@@ -2,6 +2,8 @@ import fs from 'fs';
 import path from 'path';
 
 import express from 'express';
+import bodyParser from 'body-parser';
+
 import React from 'react';
 
 import { renderToString } from 'react-dom/server';
@@ -19,17 +21,26 @@ const source = process.env.NODE_SOURCE;
 const isDev = process.env.NODE_IS_DEV;
 const port = process.env.NODE_PORT;
 
+// BODY PARSER
+// =============================================================================
+server.use(bodyParser.json());
+server.use(bodyParser.urlencoded({extended: true}));
+
+// RESPONSE
+// =============================================================================
+const staticPath = (isDev ? 'build' : 'dist') + '/static';
+server.set('views', path.resolve(`./${staticPath}`));
+
+server.use('/static', express.static(staticPath));
+server.use('/api', api);
+
+// SERVER INIT
+// =============================================================================
 db.connectFromSource().then(initServer);
 
 
 function initServer () {
 	if (isDev) saveDevJSON();
-
-	const staticPath = (isDev ? 'build' : 'dist') + '/static';
-	server.set('views', path.resolve(`./${staticPath}`));
-
-	server.use('/static', express.static(staticPath));
-	server.use('/api', api);
 
 	if (process.env.NODE_SERVER_RENDERING) {
 		server.get('*', (req, res) => {
@@ -85,6 +96,12 @@ function getInitialData () {
 
 	console.log(format1);
 	console.log(format2);
+
+	const format3 = db.format('SELECT ?? --- ## --- ##prop --- ::UPDATE --- ::AND --- ::OR --- ?? --- \\??', ['hej', arr, arr, obj, obj, obj, 'hej']);
+	const format4 = db.format('SELECT \\?? --- \\## --- \\##prop --- ?? --- ## --- ??', ['hej', ['hej', 'hej'], 'hej']);
+
+	console.log(format3);
+	console.log(format4);
 
 	return db.query('SELECT * FROM test');
 }
