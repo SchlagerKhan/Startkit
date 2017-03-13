@@ -7,11 +7,22 @@ function ajax (method = 'GET', _url, data = {}, {rejectError, resolveError} = {}
 	const url = api.url(_url);
 
 	return new Promise((resolve, reject) => {
-		request(url, data, result => {
-			if (result.success || resolveError) resolve(result);
-			else if (rejectError) reject(result);
-			else console.error('Unable to get: ' + url);
-		});
+		request(url, data)
+		 	.done(result => {
+				if (result.success || resolveError) resolve(result);
+				else error(result);
+			})
+			.fail(error);
+
+		function error (_err) {
+			const err = typeof _err === 'string' ? _err : JSON.stringify(_err);
+
+			if (rejectError) {
+				reject(err, url);
+			}
+
+			console.error('Unable to get: ' + url);
+		}
 	});
 }
 
