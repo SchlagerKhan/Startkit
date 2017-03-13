@@ -24,6 +24,7 @@ function Database (connection) {
 	return {
 		connection,
 		escape: escape.bind(connection),
+		escapeId: escapeId.bind(connection),
 		query: query.bind(connection),
 		format: format.bind(connection)
 	};
@@ -106,8 +107,10 @@ function setConfig (connection) {
 	connection.connection.config.queryFormat = (queryText, values) => { // Double connection since we use promise-mysql
 		if (!values) return queryText;
 
-		let newQuery = queryText.replace(/\\\?/g, '|Q|').replace(/\\#/g, '|H|');
-		const regex = /(\?|#\w+|#|:UPDATE|:AND|:OR)/g;
+		let newQuery = queryText.replace(/\\\?\?/g, '|QQ|').replace(/\\##/g, '|HH|');
+			newQuery = newQuery.replace(/\\\?/g, '|Q|').replace(/\\#/g, '|H|'); //eslint-disable-line
+
+		const regex = /(\?\?|\?|##\w+|#\w+|##|#|::UPDATE|:UPDATE|::AND|:AND|::OR|:OR)/g;
 
 		// console.log(newQuery);
 
@@ -121,7 +124,7 @@ function setConfig (connection) {
 
 			// console.log(match, value);
 
-			if (value === undefined) throw new Error('Not enought values for the matches made', queryText, match);
+			if (value === undefined) throw new Error(`Faulty query-value pair: ${match}, ${value}, ${queryText}`);
 
 			let safeType;
 			if (_.startsWith(match, ':')) safeType = 'object';
@@ -131,25 +134,42 @@ function setConfig (connection) {
 
 			let insertStr;
 			switch (match) {
+				case '::UPDATE':
+					insertStr = mapProps(value, true).join(', ');
+					break;
 				case ':UPDATE':
-					insertStr = mapProps(value).join(', ');
+					insertStr = mapProps(value, false).join(', ');
+					break;
+				case '::AND':
+					insertStr = mapProps(value, true).join(' AND ');
 					break;
 				case ':AND':
-					insertStr = mapProps(value).join(' AND ');
+					insertStr = mapProps(value, false).join(' AND ');
+					break;
+				case '::OR':
+					insertStr = mapProps(value, true).join(' OR ');
 					break;
 				case ':OR':
-					insertStr = mapProps(value).join(' OR ');
+					insertStr = mapProps(value, false).join(' OR ');
+					break;
+				case '##':
+					insertStr = value.map(val => escapeId(val)).join(', ');
 					break;
 				case '#':
 					insertStr = value.map(val => escape(val)).join(', ');
+					break;
+				case '??':
+					insertStr = escapeId(value);
 					break;
 				case '?':
 					insertStr = escape(value);
 					break;
 				default:
 					if (_.startsWith(match, '#')) {
-						const prop = match.replace('#', '').trim();
-						insertStr = value.map(val => `${prop}=${escape(val)}`).join(' OR ');
+						const esc = _.startsWith('##', match) ? escapeId : escape;
+
+						const prop = match.replace('##', '').replace('#', '').trim();
+						insertStr = value.map(val => `${prop}=${esc(val)}`).join(' OR ');
 					}
 					break;
 
@@ -163,6 +183,7 @@ function setConfig (connection) {
 		}
 
 		newQuery = newQuery.replace(/\|Q\|/g, '?').replace(/\|H\|/g, '#');
+		newQuery = newQuery.replace(/\|QQ\|/g, '??').replace(/\|HH\|/g, '##');
 
 		// console.log(newQuery);
 		return newQuery;
@@ -170,8 +191,9 @@ function setConfig (connection) {
 
 	return connection;
 
-	function mapProps (values) {
-		return _.values(_.mapValues(values, (value, key) => `${key}=${escape(value)}`));
+	function mapProps (values, escId) {
+		const esc = escId ? escapeId : escape;
+		return _.values(_.mapValues(values, (value, key) => `${key}=${esc(value)}`));
 	}
 	function safeQuery (value, type) {
 		if (type === 'array' && !Array.isArray(value)) return false;
@@ -198,6 +220,11 @@ function escape (data) {
 
 	return db.escape(data);
 }
+function escapeId (data) {
+	const db = getDb(this);
+
+	return db.escapeId(data);
+}
 function query (queryString, consts) {
 	const db = getDb(this);
 
@@ -219,6 +246,7 @@ export default {
 	use,
 
 	escape,
+	escapeId,
 	query,
 	format
 };
