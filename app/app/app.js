@@ -1,5 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 
+import H from 'helper';
+
 export default class App extends Component {
 	static contextTypes = {
 		serverData: PropTypes.any
@@ -10,6 +12,11 @@ export default class App extends Component {
 
 	constructor (props, context) {
 		super(props, context);
+	}
+	componentDidMount () {
+		H.api('test')
+			.then(console.log)
+			.catch(console.error);
 	}
 
 	render () {

@@ -38,16 +38,19 @@
     "webpack-merge": "^4.0.0"
   },
   "dependencies": {
+    "bluebird": "^3.5.0",
     "body-parser": "^1.17.1",
     "classnames": "^2.2.5",
     "cors": "^2.8.1",
     "ejs": "^2.5.6",
     "express": "^4.15.2",
+    "jquery": "^3.1.1",
     "promise-mysql": "^3.0.0",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-ga": "^2.1.2",
     "react-helmet": "^4.0.0",
-    "react-router": "^3.0.2"
+    "react-router": "^3.0.2",
+    "react-toastr": "^2.8.2"
   }
 }
