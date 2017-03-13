@@ -44,7 +44,7 @@ function errorResponse (res, reqData, errorMessage) {
 
 // Database
 function safeQuery (query, _data, response, successCallback, errorCallback) {
-	const data = Array.isArray(data) ? _data : [_data];
+	const data = Array.isArray(_data) ? _data : [_data];
 
 	const {database} = response.requestData;
 	const _db = database ? db.use(database) : db;

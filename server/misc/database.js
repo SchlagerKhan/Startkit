@@ -189,7 +189,7 @@ function use (database = state.primaryDatabase) {
 	return db;
 }
 function getDb (possConnection) {
-	return (!possConnection || possConnection.MODES) ? use() : possConnection; // Checks if the possConnection the global this-object, if so it returns the primary mode db (through use), otherwise it is hopefully an mysql-connection
+	return (possConnection && possConnection.connection && possConnection.connection.config) ? possConnection : use(); // Checks if the possConnection the global this-object, if so it returns the primary mode db (through use), otherwise it is hopefully an mysql-connection
 }
 
 // All following functions has the ability to be bound to a connection variable
