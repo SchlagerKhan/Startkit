@@ -113,7 +113,7 @@ function setConfig (connection) {
 		const regex = /(\?\?|\?|##\w+|#\w+|##|#|::UPDATE|:UPDATE|::AND|:AND|::OR|:OR)/g;
 
 		// console.log(newQuery);
-		const matches = queryText.match(regex) || [];
+		const matches = newQuery.match(regex) || [];
 
 		let vIndex = 0;
 		matches.forEach(match => {
