@@ -113,13 +113,10 @@ function setConfig (connection) {
 		const regex = /(\?\?|\?|##\w+|#\w+|##|#|::UPDATE|:UPDATE|::AND|:AND|::OR|:OR)/g;
 
 		// console.log(newQuery);
+		const matches = queryText.match(regex) || [];
 
-		let _match;
 		let vIndex = 0;
-		while ((_match = regex.exec(newQuery)) !== null) { // eslint-disable-line
-		    if (_match.index === regex.lastIndex) regex.lastIndex++; // This is necessary to avoid infinite loops with zero-width matches
-
-			const match = _.findLast(_match);
+		matches.forEach(match => {
 			const value = values[vIndex];
 
 			// console.log(match, value);
@@ -130,7 +127,7 @@ function setConfig (connection) {
 			if (_.startsWith(match, ':')) safeType = 'object';
 			else if (_.startsWith(match, '#')) safeType = 'array';
 
-			if (!safeQuery(value, safeType)) throw new Error(`Faulty query-value pair: ${match}, ${value} (supposed to be: ${safeType}), ${queryText}`);
+			if (!safeQuery(value, safeType)) throw new Error(`Faulty query-value pair (index: ${vIndex}): ${match}, ${JSON.stringify(value)} (${typeof value} | supposed to be: ${safeType}), ${queryText}`);
 
 			let insertStr;
 			switch (match) {
@@ -180,7 +177,7 @@ function setConfig (connection) {
 			}
 
 			vIndex++;
-		}
+		});
 
 		newQuery = newQuery.replace(/\|Q\|/g, '?').replace(/\|H\|/g, '#');
 		newQuery = newQuery.replace(/\|QQ\|/g, '??').replace(/\|HH\|/g, '##');
