@@ -9,7 +9,8 @@
     "expect": true,
     "sinon": true,
     "__DEV__": true,
-    "__IS_BROWSER__": true
+    "__IS_BROWSER__": true,
+    "__DATA__": true
   },
   "ecmaFeatures": {
     "arrowFunctions": true,
