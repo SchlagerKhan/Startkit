@@ -145,7 +145,10 @@ function getEnvConfig () {
 						test: /\.scss$/,
 						use: ExtractTextPlugin.extract({
 							fallback: 'style-loader',
-							use: 'css-loader?minimize&modules&camelCase&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!sass-loader'
+							use: [
+								'css-loader?minimize&modules&camelCase=dashes&importLoaders=1&localIdentName=[hash:base64:5]',
+								'sass-loader'
+							]
 						})
 					}
 				]
@@ -174,8 +177,10 @@ function getEnvConfig () {
 					test: /\.scss$/,
 					use: ExtractTextPlugin.extract({
 						fallback: 'style-loader',
-						use: 'css-loader?minimize&modules&camelCase=dashes&importLoaders=1&localIdentName=[hash:base64:5]!sass-loader'
-
+						use: [
+							'css-loader?minimize&modules&camelCase=dashes&importLoaders=1&localIdentName=[hash:base64:5]',
+							'sass-loader'
+						]
 					})
 				}
 			]
@@ -203,7 +208,7 @@ function getSourceConfig () {
 						test: /\.(jpe?g|png|gif|svg|ico)$/i,
 						use: [
 							'file-loader?hash=sha512&digest=hex&name=images/[name].[hash].[ext]',
-							'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
+							'image-webpack-loader?bypassOnDebug&optimizationLevel=7&interlaced=false'
 						]
 					}
 				]
