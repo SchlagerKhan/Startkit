@@ -5,26 +5,29 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const common = require('./common.webpack.config.js');
+const htmlOptions = {
+	template: 'static/index.ejs',
+	inject: false,
+
+	title: 'React Server Rendering Boilerplate',
+	markup: '',
+	insertData: 'false'
+};
 
 const config = {
 	plugins: [
 		new HtmlWebpackPlugin({ // For production
-			template: 'static/index.ejs',
+			...htmlOptions,
 			filename: 'index.ejs',
-			inject: false,
 
-			title: 'React Server Rendering Boilerplate',
 			markup: '<%- markup %>',
-			source: common.SOURCE
+			insertData: '<%- insertData %>'
 		}),
 		new HtmlWebpackPlugin({  // For dev-server
-			template: 'static/index.ejs',
-			filename: 'index.html',
-			inject: false,
-
-			title: 'React Server Rendering Boilerplate',
-			source: common.SOURCE
+			...htmlOptions,
+			filename: 'index.html'
 		}),
+
 		new webpack.DefinePlugin({
 			__IS_BROWSER__: true
 		})

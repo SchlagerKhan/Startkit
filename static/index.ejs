@@ -10,7 +10,9 @@
 	<title><%= htmlWebpackPlugin.options.title %></title>
 </head>
 <body>
-	<div id='root'><%=htmlWebpackPlugin.options.markup || ''%></div>
+	<div id='root'><%= htmlWebpackPlugin.options.markup %></div>
+
+	<script>var __DATA__ = <%= htmlWebpackPlugin.options.insertData %>; </script>
 
 	<script type="text/javascript" src="<%= htmlWebpackPlugin.files.js %>"></script>
 	<link rel="stylesheet" type="text/css" href="<%= htmlWebpackPlugin.files.css %>">

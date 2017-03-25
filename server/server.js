@@ -1,3 +1,6 @@
+import Promise from 'bluebird';
+import xor from 'base64-xor';
+
 import fs from 'fs';
 import path from 'path';
 
@@ -14,6 +17,8 @@ import db from 'database';
 import api from './api/api';
 import routes from 'app/app/routes';
 import DataWrapper from 'app/app/data-wrapper';
+
+import Test from 'server-models/test';
 
 const server = express();
 
@@ -42,30 +47,33 @@ db.connectFromSource().then(initServer);
 function initServer () {
 	if (isDev) saveDevJSON();
 
-	if (process.env.NODE_SERVER_RENDERING) {
-		server.get('*', (req, res) => {
-			match({ routes: routes, location: req.url }, (err, redirect, props) => {
-				if (err) {
-					return res.status(500).send(err.message)
-				} else if (redirect) {
-					return res.redirect(redirect.pathname + redirect.search)
-				} else if (!props) {
-					res.status(404);
-					res.render('index.ejs', { markup: 'Not found'});
-					return;
-				}
+	server.get('*', (req, res) => {
+		match({ routes: routes, location: req.url }, (err, redirect, props) => {
+			if (err) {
+				return res.status(500).send(err.message)
+			} else if (redirect) {
+				return res.redirect(redirect.pathname + redirect.search)
+			} else if (!props) {
+				res.status(404);
+				res.render('index.ejs', { markup: 'Not found'});
+				return;
+			}
 
-				getInitialData().then(data => {
-					const markup = renderToString(<DataWrapper serverData={data}><RouterContext {...props} /></DataWrapper>);
-					res.render('index.ejs', { markup });
-				});
+			const { location, params } = props;
+
+			getInitialData(location, params).then(data => {
+				const encryptedData = xor.encode('SECRET', JSON.stringify(data));
+
+				const markup = renderToString(
+					<DataWrapper serverData={data}>
+						<RouterContext {...props} />
+					</DataWrapper>
+				);
+
+				res.render('index.ejs', { markup, insertData: JSON.stringify(encryptedData) });
 			});
 		});
-	} else {
-		server.get('*', (req, res) => {
-			res.render('index.ejs')
-		});
-	}
+	});
 
 	server.listen(port, (err) => {
 		if (err) console.log(err);
@@ -74,34 +82,28 @@ function initServer () {
 	});
 }
 function saveDevJSON () {
-	getInitialData()
+	getInitialDevData()
 		.then(_newData => {
 			const path = 'app/dev-data.json';
 
 			const newData = JSON.stringify(_newData, null, 4);
 			const oldData = fs.readFileSync(path, 'utf8');
 
-			// Checks if the data has changed. This is necessary since we cannot yet make webpack ignore certain files in the watching process
 			if (oldData !== newData) {
 				fs.writeFile(path, newData, 'utf8');
 			}
 		});
 }
-function getInitialData () {
-	const arr = [1, 2, 3];
-	const obj = {one: 1, two: 2, three: 3};
+function getInitialDevData () {
+	return Promise.all([
+		Test.getTestData()
+	]).then(data => {
+		return {
+			testData: data[0]
+		}
+	});
+}
 
-	const format1 = db.format('SELECT ? --- # --- #prop --- :UPDATE --- :AND --- :OR --- ? --- \\?', ['hej', arr, arr, obj, obj, obj, 'hej']);
-	const format2 = db.format('SELECT \\? --- \\# --- \\#prop --- ? --- # --- ?', ['hej', ['hej', 'hej'], 'hej']);
-
-	console.log(format1);
-	console.log(format2);
-
-	const format3 = db.format('SELECT ?? --- ## --- ##prop --- ::UPDATE --- ::AND --- ::OR --- ?? --- \\??', ['hej', arr, arr, obj, obj, obj, 'hej']);
-	const format4 = db.format('SELECT \\?? --- \\## --- \\##prop --- ?? --- ## --- ??', ['hej', ['hej', 'hej'], 'hej']);
-
-	console.log(format3);
-	console.log(format4);
-
-	return db.query('SELECT * FROM test');
+function getInitialData (location, params) {
+	return Test.getTestData();
 }

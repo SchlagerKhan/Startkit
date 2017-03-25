@@ -18,8 +18,6 @@ const isDev = !args || (['start', 'build:dev'].indexOf(args) !== -1 && !process.
 
 const NODE_ENV = isDev ? 'development' : 'production';
 const NODE_SOURCE = args.indexOf('stage') !== -1 ? 'stage' : args.indexOf('production') !== -1 ? 'production' : 'local'; // eslint-disable-line
-// const NODE_SERVER_RENDERING = !isDev; //TODO: Change this
-const NODE_SERVER_RENDERING = true;
 
 console.log('[args, env, source, is-dev]', args, NODE_ENV, NODE_SOURCE, isDev);
 
@@ -71,7 +69,8 @@ const common = {
 				'server-helper': path.resolve('./server/misc/helper'),
 				'server-globals': path.resolve('./server/misc/globals'),
 
-				modules: path.resolve('./server/modules'),
+				'server-modules': path.resolve('./server/modules'),
+				'server-models': path.resolve('./server/models'),
 
 				// APP
 				component: path.resolve('./app/components'),
@@ -80,7 +79,7 @@ const common = {
 				container: path.resolve('./app/containers'),
 				containers: path.resolve('./app/containers/containers.js'),
 
-				globals: path.resolve('./app/misc/globals.js'),
+				'app-globals': path.resolve('./app/misc/globals.js'),
 				helper: path.resolve('./app/misc/helper'),
 
 				images: path.resolve('./static/images'),
@@ -95,8 +94,7 @@ const common = {
 					NODE_ENV: JSON.stringify(NODE_ENV),
 					NODE_IS_DEV: JSON.stringify(isDev),
 					NODE_SOURCE: JSON.stringify(NODE_SOURCE),
-					NODE_PORT: JSON.stringify(isDev ? ports.dev : ports.prod),
-					NODE_SERVER_RENDERING: JSON.stringify(NODE_SERVER_RENDERING)
+					NODE_PORT: JSON.stringify(isDev ? ports.dev : ports.prod)
 				}
 			})
 		],

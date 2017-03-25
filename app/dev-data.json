@@ -1,14 +1,16 @@
-[
-    {
-        "id": 1,
-        "text": "hejhej"
-    },
-    {
-        "id": 2,
-        "text": "hejsan"
-    },
-    {
-        "id": 3,
-        "text": "idsgsandl"
-    }
-]
+{
+    "testData": [
+        {
+            "id": 1,
+            "text": "hejhej"
+        },
+        {
+            "id": 2,
+            "text": "hejsan"
+        },
+        {
+            "id": 3,
+            "text": "idsgsandl"
+        }
+    ]
+}
