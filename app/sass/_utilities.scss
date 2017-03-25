@@ -8,16 +8,24 @@
 	        box-sizing: $type; // IE 8, Opera 9.5+
 }
 
-// Styles
+// General
 @mixin border-radius($value){
 	-webkit-border-radius: $value;
 	-moz-border-radius: $value;
 	border-radius: $value;
 }
+
 @mixin box-shadow ($values...) {
 	-webkit-box-shadow: $values; // iOS Safari 3.2 - 4.3, Android 2.1+
 	        box-shadow: $values;
 }
+@mixin drop-shadow () {
+	@include box-shadow(0 2px 4px 0 rgba(0, 0, 0, 0.5));
+}
+@mixin box-shadow-right () {
+	@include box-shadow (2px 0 4px 0 rgba(0, 0, 0, 0.5));
+}
+
 @mixin opacity ($value: 0) {
 	$value-percentage: $value * 100;
 
@@ -35,25 +43,6 @@
 	}
 	&:-ms-input-placeholder { color: $color; } // Internet Explorer 10+
 	&::-webkit-input-placeholder  { color: $color; } // Safari and Chrome
-}
-
-
-// General Styles
-@mixin opacity($opacity) {
-	opacity: $opacity;
-	// IE8 filter
-	$opacity-ie: ($opacity * 100);
-	filter: alpha(opacity=$opacity-ie);
-}
-
-@mixin box-shadow($shadow...) {
-	-webkit-box-shadow: $shadow; // iOS <4.3 & Android <4.1
-	box-shadow: $shadow;
-}
-@mixin box-sizing($boxmodel) {
-	-webkit-box-sizing: $boxmodel;
-	-moz-box-sizing: $boxmodel;
-	box-sizing: $boxmodel;
 }
 
 
@@ -252,7 +241,11 @@
 	-ms-user-select: $select; // IE10+
 	user-select: $select;
 }
-
+@mixin ellipsis {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 
 // Animations and keyframes
 @mixin animation($animate...) {
