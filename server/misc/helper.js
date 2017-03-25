@@ -1,7 +1,7 @@
 import db from 'database';
 
 // Request
-function testInputs (req, res, requirements = []) {
+export function testInputs (req, res, requirements = []) {
 	const reqData = (Object.keys(req.query).length > 0 ? req.query : req.body) || {};
 	const unset = requirements.filter(r => reqData[r] === undefined);
 	const success = unset.length === 0;
@@ -43,7 +43,7 @@ function errorResponse (res, reqData, errorMessage) {
 }
 
 // Database
-function safeQuery (query, _data, response, successCallback, errorCallback) {
+export function safeQuery (query, _data, response, successCallback, errorCallback) {
 	const data = Array.isArray(_data) ? _data : [_data];
 
 	const {database} = response.requestData;
@@ -77,7 +77,7 @@ function safeQuery (query, _data, response, successCallback, errorCallback) {
 			}
 		});
 }
-function plainQuery (query, data) {
+export function plainQuery (query, data) {
 	return db.query(query, data).catch(console.error);
 }
 
@@ -86,7 +86,6 @@ export default {
 		test: testInputs
 	},
 	response: {
-		test: testInputs,
 		notImplemented: notImplementedResponse,
 		error: errorResponse
 	},
