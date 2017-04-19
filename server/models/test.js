@@ -4,7 +4,7 @@ export function getTestData () {
 	const arr = [1, 2, 3];
 	const obj = {one: 1, two: 2, three: 3};
 
-	const format1 = db.format('SELECT ? --- # --- #prop --- :UPDATE --- :AND --- :OR --- ? --- \\?', ['hej', arr, arr, obj, obj, obj, 'hej']);
+	const format1 = db.format('SELECT ? --- ? --- # --- #prop --- :UPDATE --- :AND --- :OR --- ? --- \\?', ['hej', 'Will this with # work?', arr, arr, obj, obj, obj, 'hej', ]);
 	const format2 = db.format('SELECT \\? --- \\# --- \\#prop --- ? --- # --- ?', ['hej', ['hej', 'hej'], 'hej']);
 
 	console.log(format1);

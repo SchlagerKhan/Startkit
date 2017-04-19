@@ -112,16 +112,21 @@ function setConfig (connection) {
 
 		const regex = /(\?\?|\?|##\w+|#\w+|##|#|::UPDATE|:UPDATE|::AND|:AND|::OR|:OR)/g;
 
-		// console.log(newQuery);
-		const matches = newQuery.match(regex) || [];
 
 		let vIndex = 0;
-		matches.forEach(match => {
+		newQuery = newQuery.replace(regex, iterateReplacement);
+
+		newQuery = newQuery.replace(/\|Q\|/g, '?').replace(/\|H\|/g, '#');
+		newQuery = newQuery.replace(/\|QQ\|/g, '??').replace(/\|HH\|/g, '##');
+
+
+		return newQuery;
+
+
+		function iterateReplacement (match) {
 			const value = values[vIndex];
 
-			// console.log(match, value);
-
-			if (value === undefined) throw new Error(`Faulty query-value pair: ${match}, ${value}, ${queryText}`);
+			if (value === undefined) throw new Error(`Value at index ${vIndex} is undefined: ${match}, ${value}, ${queryText}`);
 
 			let safeType;
 			if (_.startsWith(match, ':')) safeType = 'object';
@@ -129,65 +134,59 @@ function setConfig (connection) {
 
 			if (!safeQuery(value, safeType)) throw new Error(`Faulty query-value pair (index: ${vIndex}): ${match}, ${JSON.stringify(value)} (${typeof value} | supposed to be: ${safeType}), ${queryText}`);
 
-			let insertStr;
-			switch (match) {
-				case '::UPDATE':
-					insertStr = mapProps(value, true).join(', ');
-					break;
-				case ':UPDATE':
-					insertStr = mapProps(value, false).join(', ');
-					break;
-				case '::AND':
-					insertStr = mapProps(value, true).join(' AND ');
-					break;
-				case ':AND':
-					insertStr = mapProps(value, false).join(' AND ');
-					break;
-				case '::OR':
-					insertStr = mapProps(value, true).join(' OR ');
-					break;
-				case ':OR':
-					insertStr = mapProps(value, false).join(' OR ');
-					break;
-				case '##':
-					insertStr = value.map(val => escapeId(val)).join(', ');
-					break;
-				case '#':
-					insertStr = value.map(val => escape(val)).join(', ');
-					break;
-				case '??':
-					insertStr = escapeId(value);
-					break;
-				case '?':
-					insertStr = escape(value);
-					break;
-				default:
-					if (_.startsWith(match, '#')) {
-						const esc = _.startsWith('##', match) ? escapeId : escape;
-
-						const prop = match.replace('##', '').replace('#', '').trim();
-						insertStr = value.map(val => `${prop}=${esc(val)}`).join(' OR ');
-					}
-					break;
-
-			}
-
-			if (insertStr) {
-				newQuery = newQuery.replace(match, insertStr);
-			}
-
 			vIndex++;
-		});
 
-		newQuery = newQuery.replace(/\|Q\|/g, '?').replace(/\|H\|/g, '#');
-		newQuery = newQuery.replace(/\|QQ\|/g, '??').replace(/\|HH\|/g, '##');
-
-		// console.log(newQuery);
-		return newQuery;
+			return getQueryReplacement(match, value);
+		}
 	};
 
 	return connection;
 
+	function getQueryReplacement (match, value) {
+		let insertStr;
+		switch (match) {
+			case '::UPDATE':
+				insertStr = mapProps(value, true).join(', ');
+				break;
+			case ':UPDATE':
+				insertStr = mapProps(value, false).join(', ');
+				break;
+			case '::AND':
+				insertStr = mapProps(value, true).join(' AND ');
+				break;
+			case ':AND':
+				insertStr = mapProps(value, false).join(' AND ');
+				break;
+			case '::OR':
+				insertStr = mapProps(value, true).join(' OR ');
+				break;
+			case ':OR':
+				insertStr = mapProps(value, false).join(' OR ');
+				break;
+			case '##':
+				insertStr = value.map(val => escapeId(val)).join(', ');
+				break;
+			case '#':
+				insertStr = value.map(val => escape(val)).join(', ');
+				break;
+			case '??':
+				insertStr = escapeId(value);
+				break;
+			case '?':
+				insertStr = escape(value);
+				break;
+			default:
+				if (_.startsWith(match, '#')) {
+					const esc = _.startsWith('##', match) ? escapeId : escape;
+
+					const prop = match.replace('##', '').replace('#', '').trim();
+					insertStr = value.map(val => `${prop}=${esc(val)}`).join(' OR ');
+				}
+				break;
+		}
+
+		return insertStr;
+	}
 	function mapProps (values, escId) {
 		const esc = escId ? escapeId : escape;
 		return _.values(_.mapValues(values, (value, key) => `${key}=${esc(value)}`));

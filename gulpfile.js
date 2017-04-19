@@ -2,6 +2,7 @@ require('babel-register');
 
 const path = require('path');
 const gulp = require('gulp');
+const argv = require('yargs').argv;
 
 const nodemon = require('nodemon');
 const rsync = require('gulp-rsync');
@@ -80,8 +81,8 @@ gulp.task('build:backend', (done) => {
 gulp.task('build', ['build:frontend', 'build:backend']);
 
 gulp.task('upload', ['clean:dist', 'build'], () => {
-	if (commonConfig.SOURCE === 'production' && !process.env.npm_config_force) {
-		console.log('Are you sure you want to upload to main? If so, run with --force');
+	if (commonConfig.SOURCE === 'production' && !argv.force) {
+		console.log('Are you sure you want to upload to main? If so, run "yarn deploy:production -- --force"');
 		return false;
 	}
 
