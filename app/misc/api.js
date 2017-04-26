@@ -6,6 +6,8 @@ function fetch(method, _url, data, options = {}) {
 
 	const url = `/api/${_url}`;
 
+	if (process.env.NODE_ENV === 'test') return Promise.resolve({});
+
 	return fetchival(url)[method](data).then(catchResponse, catchResponse);
 
 	function catchResponse(response) {

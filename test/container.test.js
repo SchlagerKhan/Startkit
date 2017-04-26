@@ -1,3 +1,5 @@
+import 'test-config';
+
 import React, {Component} from 'react';
 import {shallow} from 'enzyme';
 

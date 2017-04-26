@@ -269,6 +269,13 @@ The deployment is processed in the `gulpfile.js` file as well as it's config. Th
 
 ## Testing
 
+## ToDo
+
+* Container
+    * Add `pending`, `failed`, `successful` to the container loading objects.
+* Testing
+    * Add fetch support
+
 # Bonus pro tips
 Here are a few things to think about when creating your project. Full disclaimer, of course, hehe...
 

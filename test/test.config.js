@@ -1,3 +1,16 @@
+import Promise from 'bluebird';
+
+// window.fetch = jest.fn().mockImplementation(() =>
+// 	Promise.resolve({
+// 		status: {
+// 			code: 200,
+// 			message: 'OK',
+// 			success: true,
+// 		},
+// 		result: {},
+// 	})
+// );
+
 expect.extend({
 	toBeArray(received) {
 		const pass = Array.isArray(received);
