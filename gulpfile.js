@@ -20,8 +20,6 @@ function onBuild (cb) {
 	return (err, stats) => {
 		if (err) console.log(err);
 		if (stats) {
-			console.log('[Env, Source, isDev] ', commonConfig.ENV, commonConfig.SOURCE, commonConfig.IS_DEV);
-
 			console.log(stats.toString({
 				colors: true,
 

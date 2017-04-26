@@ -1,4 +1,3 @@
-import Promise from 'bluebird';
 import xor from 'base64-xor';
 
 import fs from 'fs';
@@ -6,11 +5,13 @@ import path from 'path';
 
 import express from 'express';
 import bodyParser from 'body-parser';
+import APIHelper from 'server-api-helper';
 
 import React from 'react';
 
 import { renderToString } from 'react-dom/server';
-import { match, RouterContext } from 'react-router'
+import { match, RouterContext } from 'react-router';
+import Helmet from 'react-helmet';
 
 import db from 'database';
 
@@ -18,41 +19,44 @@ import api from './api/api';
 import routes from 'app/app/routes';
 import DataWrapper from 'app/app/data-wrapper';
 
-import Test from 'server-models/test';
+import Model from 'server-models/model';
 
-const server = express();
+const app = express();
 
-const source = process.env.NODE_SOURCE;
+const source = process.env.NODE_SOURCE; // eslint-disable-line
 const isDev = process.env.NODE_IS_DEV;
 const port = process.env.NODE_PORT;
 
 // BODY PARSER
-// =============================================================================
-server.use(bodyParser.json());
-server.use(bodyParser.urlencoded({extended: true}));
+// ===========================================================================
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(APIHelper.validator());
 
 // RESPONSE
-// =============================================================================
+// ===========================================================================
 const staticPath = (isDev ? 'build' : 'dist') + '/static';
-server.set('views', path.resolve(`./${staticPath}`));
+app.set('views', path.resolve(`./${staticPath}`));
 
-server.use('/static', express.static(staticPath));
-server.use('/api', api);
+app.use('/static', express.static(staticPath));
+app.use('/api', api);
 
 // SERVER INIT
-// =============================================================================
-db.connectFromSource().then(initServer);
+// ===========================================================================
+db.connect().then(initServer);
 
 
 function initServer () {
 	if (isDev) saveDevJSON();
 
-	server.get('*', (req, res) => {
+	app.get('*', (req, res) => {
 		match({ routes: routes, location: req.url }, (err, redirect, props) => {
 			if (err) {
-				return res.status(500).send(err.message)
+				res.status(500).send(err.message);
+				return;
 			} else if (redirect) {
-				return res.redirect(redirect.pathname + redirect.search)
+				res.redirect(redirect.pathname + redirect.search);
+				return;
 			} else if (!props) {
 				res.status(404);
 				res.render('index.ejs', { markup: 'Not found'});
@@ -70,40 +74,59 @@ function initServer () {
 					</DataWrapper>
 				);
 
-				res.render('index.ejs', { markup, insertData: JSON.stringify(encryptedData) });
+
+				res.render('index.ejs', {
+					...getMetaTags(),
+
+					markup,
+					insertData: JSON.stringify(encryptedData),
+
+					delimiter: '?'
+				});
 			});
 		});
 	});
 
-	server.listen(port, (err) => {
+	app.listen(port, (err) => {
 		if (err) console.log(err);
 
 		console.info('==> 🌎 Listenings on port %s', port);
 	});
 }
+function getMetaTags () {
+	const { title, meta, link } = Helmet.renderStatic();
+
+
+	return {
+		title: title.toString() || 'Page title',
+		meta: meta.toString() || 'Meta description',
+		link: link.toString() || ''
+	};
+}
+
 function saveDevJSON () {
 	getInitialDevData()
 		.then(_newData => {
-			const path = 'app/dev-data.json';
+			const devDataPath = 'app/dev-data.json';
 
 			const newData = JSON.stringify(_newData, null, 4);
-			const oldData = fs.readFileSync(path, 'utf8');
+			const oldData = fs.readFileSync(devDataPath, 'utf8');
 
 			if (oldData !== newData) {
-				fs.writeFile(path, newData, 'utf8');
+				fs.writeFile(devDataPath, newData, 'utf8');
 			}
 		});
 }
-function getInitialDevData () {
+function getInitialDevData () {
 	return Promise.all([
-		Test.getTestData()
+		Model.list()
 	]).then(data => {
 		return {
 			testData: data[0]
-		}
+		};
 	});
 }
 
-function getInitialData (location, params) {
-	return Test.getTestData();
+function getInitialData (location, params) { // eslint-disable-line
+	return Model.list();
 }

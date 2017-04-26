@@ -5,32 +5,11 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const common = require('./common.webpack.config.js');
-const htmlOptions = {
-	template: 'static/index.ejs',
-	inject: false,
-
-	title: 'React Server Rendering Boilerplate',
-	markup: '',
-	insertData: 'false'
-};
 
 const config = {
 	plugins: [
-		new HtmlWebpackPlugin({ // For production
-			...htmlOptions,
-			filename: 'index.ejs',
-
-			markup: '<%- markup %>',
-			insertData: '<%- insertData %>'
-		}),
-		new HtmlWebpackPlugin({  // For dev-server
-			...htmlOptions,
-			filename: 'index.html'
-		}),
-
-		new webpack.DefinePlugin({
-			__IS_BROWSER__: true
-		})
+		...getHtmlPlugins(),
+		new webpack.DefinePlugin({ __IS_BROWSER__: true })
 	],
 
 	devServer: {
@@ -54,7 +33,9 @@ const config = {
 	}
 };
 
-module.exports = merge.smart(common.config, config, getEnvConfig());
+const mergedConfig = merge.smart(common.config, config, getEnvConfig());
+
+module.exports = mergedConfig;
 
 function getEnvConfig () {
 	if (common.IS_DEV) {
@@ -73,6 +54,35 @@ function getEnvConfig () {
 		entry: path.resolve('./app/index.js'),
 		output: {
 			filename: 'js/index.[hash].js'
-		}
+		},
+		plugins: [
+			new webpack.optimize.UglifyJsPlugin()
+		]
 	};
+}
+function getHtmlPlugins() {
+	const plugins = [
+		getPlugin({ filename: 'index.ejs', isDevServer: false }), // For server-rendering
+	];
+
+	if (common.IS_DEV) { // For dev-server and non-server-rendering
+		plugins.push( getPlugin({ filename: 'index.html' }) );
+	}
+
+	return plugins;
+
+	function getPlugin (options) {
+		const htmlOptions = {
+			template: 'static/index.ejs',
+			inject: false,
+
+			isDevServer: true,
+			isDev: common.IS_DEV
+		};
+
+		return new HtmlWebpackPlugin({
+			...htmlOptions,
+			...options
+		});
+	}
 }

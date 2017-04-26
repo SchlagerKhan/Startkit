@@ -25,11 +25,15 @@ const config = {
 		})
 	],
 
+	devtool: 'source-map',
+
 	target: 'node',
 	externals: nodeModules,
 };
 
-module.exports = merge.smart(common.config, config);
+const mergedConfig = merge.smart(common.config, config);
+
+module.exports = mergedConfig;
 
 
 console.log(path.resolve('app'));

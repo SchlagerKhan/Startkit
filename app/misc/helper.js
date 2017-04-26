@@ -1,39 +1,71 @@
-import Promise from 'bluebird';
-import $ from 'jquery';
+import React from 'react';
+import Helmet from 'react-helmet';
 
-// API
-function ajax (method = 'GET', _url, data = {}, {rejectError, resolveError} = {}) { // eslint-disable-line
-	const request = method === 'GET' ? $.get : $.post;
-	const url = api.url(_url);
+import G from 'app-globals';
 
-	return new Promise((resolve, reject) => {
-		request(url, data)
-		 	.done(result => {
-				if (result.success || resolveError) resolve(result);
-				else error(result);
-			})
-			.fail(error);
-
-		function error (_err) {
-			const err = typeof _err === 'string' ? _err : JSON.stringify(_err);
-
-			if (rejectError) {
-				reject(err, url);
-			}
-
-			console.error('Unable to get: ' + url);
-		}
-	});
+// MISC
+function isDev () {
+	return process.env.NODE_ENV === 'development';
+}
+function isMobile () {
+	return __IS_BROWSER__ && window.innerWidth < G.dimensions.desktop;
 }
 
-const api = ajax.bind(this, 'GET');
-api.get = ajax.bind(this, 'GET');
-api.post = ajax.bind(this, 'POST');
+function getHelmet (title, description, _links = [], _metas = []) {
+	const links = [
+		..._links,
+		// {
+		// 	rel: 'apple-touch-icon',
+		// 	sizes: '180x180',
+		// 	href: require('images/logos/favicon/apple-touch-icon.png').toString()
+		// },
+		// {
+		// 	rel: 'icon',
+		// 	type: 'image/png',
+		// 	sizes: '16x16',
+		// 	href: require('images/logos/favicon/favicon-16.png').toString()
+		// },
+		// {
+		// 	rel: 'icon',
+		// 	type: 'image/png',
+		// 	sizes: '32x32',
+		// 	href: require('images/logos/favicon/favicon-32.png').toString()
+		// },
+		// {
+		// 	rel: 'icon',
+		// 	type: 'image/png',
+		// 	sizes: '192x192',
+		// 	href: require('images/logos/favicon/favicon-192.png').toString()
+		// },
+		// {
+		// 	rel: 'icon',
+		// 	type: 'image/png',
+		// 	sizes: '512x512',
+		// 	href: require('images/logos/favicon/favicon-512.png').toString()
+		// }
+	];
+	const metas = [
+		..._metas,
+		{
+			name: 'description',
+			content: description
+		}
+	];
 
-api.url = (path) => {
-	return '/api/' + path;
-};
+	return (
+		<Helmet
+			title={title}
+			link={links}
+			meta={metas}
+		/>
+	);
+}
+
 
 export default {
-	api
+	misc: {
+		isDev,
+		isMobile,
+		helmet: getHelmet
+	}
 };

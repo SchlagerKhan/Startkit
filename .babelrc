@@ -5,7 +5,41 @@
 		"stage-0"
 	],
 	"plugins": [
-		"transform-decorators-legacy"
+		"transform-decorators-legacy",
+		[
+			"module-resolver", {
+				"root": ["./"],
+				"alias": {
+					"app": "./app",
+					"server": "./server",
+					"static": "./static",
+
+					"database": "./server/misc/database",
+					"server-helper": "./server/misc/helper",
+					"server-api": "./server/api/api",
+					"server-api-helper": "./server/api/api-helper",
+					"server-models": "./server/models",
+
+					"component": "./app/components",
+					"components": "./app/components/components",
+
+					"page": "./app/pages",
+					"pages": "./app/pages/pages",
+					"container": "./app/pages/container",
+
+					"app-globals": "./app/misc/globals",
+					"helper": "./app/misc/helper",
+					"api": "./app/misc/api",
+
+					"images": "./static/images",
+					"documents": "./static/documents",
+					"fonts": "./static/fonts",
+
+					"styles": "./app/sass/_styles.scss",
+					"test-config": "./test/test.config.js"
+				}
+			}
+		]
 	],
 	"env": {
 		"production": {

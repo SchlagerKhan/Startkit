@@ -3,7 +3,7 @@
   "env": {
     "browser": true,
     "node": true,
-    "mocha": true
+    "jest": true
   },
   "globals": {
     "expect": true,
@@ -66,7 +66,7 @@
     "no-irregular-whitespace": 1,    // http://eslint.org/docs/rules/no-irregular-whitespace
     "no-obj-calls": 2,               // http://eslint.org/docs/rules/no-obj-calls
     "no-sparse-arrays": 2,           // http://eslint.org/docs/rules/no-sparse-arrays
-    "no-unreachable": 2,             // http://eslint.org/docs/rules/no-unreachable
+    "no-unreachable": 1,             // http://eslint.org/docs/rules/no-unreachable
     "use-isnan": 2,                  // http://eslint.org/docs/rules/use-isnan
     "block-scoped-var": 2,           // http://eslint.org/docs/rules/block-scoped-var
 
@@ -108,7 +108,7 @@
     "no-sequences": 2,               // http://eslint.org/docs/rules/no-sequences
     "no-throw-literal": 2,           // http://eslint.org/docs/rules/no-throw-literal
     "no-with": 2,                    // http://eslint.org/docs/rules/no-with
-    "radix": 2,                      // http://eslint.org/docs/rules/radix
+    "radix": 0,                      // http://eslint.org/docs/rules/radix
     "vars-on-top": 2,                // http://eslint.org/docs/rules/vars-on-top
     "wrap-iife": [2, "any"],         // http://eslint.org/docs/rules/wrap-iife
     "yoda": 2,                       // http://eslint.org/docs/rules/yoda
@@ -148,7 +148,7 @@
     }],
     "no-nested-ternary": 2,          // http://eslint.org/docs/rules/no-nested-ternary
     "no-new-object": 2,              // http://eslint.org/docs/rules/no-new-object
-    "no-spaced-func": 2,             // http://eslint.org/docs/rules/no-spaced-func
+    "no-spaced-func": 0,             // http://eslint.org/docs/rules/no-spaced-func
     "no-trailing-spaces": 0,         // http://eslint.org/docs/rules/no-trailing-spaces
     "no-extra-parens": [2, "functions"], // http://eslint.org/docs/rules/no-extra-parens
     "no-underscore-dangle": 0,       // http://eslint.org/docs/rules/no-underscore-dangle

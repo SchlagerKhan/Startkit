@@ -9,16 +9,14 @@ import routes from './app/routes';
 
 let serverData;
 if (process.env.NODE_IS_DEV && __DATA__ === false) {
-	 serverData = require('./dev-data.json'); // eslint-disable-line
+	serverData = require('./dev-data.json'); // eslint-disable-line
 } else if (__DATA__) {
 	serverData = JSON.parse(xor.decode('SECRET', __DATA__));
 }
 
 render(
-	(
-		<DataWrapper serverData={serverData}>
-			<Router routes={routes} history={browserHistory}/>
-		</DataWrapper>
-	),
+	<DataWrapper serverData={serverData}>
+		<Router routes={routes} history={browserHistory} />
+	</DataWrapper>,
 	document.getElementById('root')
 );

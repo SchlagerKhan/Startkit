@@ -1,3 +1,6 @@
+<% var IS_DEV_SERVER = htmlWebpackPlugin.options.isDevServer %>
+<% var IS_DEV = htmlWebpackPlugin.options.isDev %>
+
 <!DOCTYPE html>
 <html lang=se >
 <head>
@@ -7,12 +10,16 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
 
-	<title><%= htmlWebpackPlugin.options.title %></title>
+	<% if (!IS_DEV_SERVER) { %>
+		<?- title ?>
+		<?- meta ?>
+		<?- link ?>
+	<% } %>
 </head>
 <body>
-	<div id='root'><%= htmlWebpackPlugin.options.markup %></div>
+	<div id='root'><%= IS_DEV_SERVER ? '' : '<?- markup ?>' %></div>
 
-	<script>var __DATA__ = <%= htmlWebpackPlugin.options.insertData %>; </script>
+	<script>var __DATA__ = <%= (IS_DEV_SERVER) ? false : '<?- insertData ?>' %>; </script>
 
 	<script type="text/javascript" src="<%= htmlWebpackPlugin.files.js %>"></script>
 	<link rel="stylesheet" type="text/css" href="<%= htmlWebpackPlugin.files.css %>">

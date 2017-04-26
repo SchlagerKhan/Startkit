@@ -1,7 +1,7 @@
-import Main from './main/main';
+import Start from './start/start';
 import Page from './page/page';
 
 module.exports = {
-	Main,
+	Start,
 	Page
 };
