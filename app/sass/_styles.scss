@@ -6,6 +6,11 @@
 
 .initial-overlay { display:none; }
 
+*, *:before, *:after{
+	@include box-sizing(border-box);
+	outline:none;
+}
+
 body {
 	margin:0;
 	padding:0;

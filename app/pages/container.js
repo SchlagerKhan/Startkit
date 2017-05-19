@@ -65,7 +65,7 @@ const container = (Target, _dataSchema = []) => {
 			const sdData = serverData && serverData[alias];
 
 			if (!sdData) {
-				this.initNotExistingData(alias, apiUrl, defaultValue);
+				this.initNotExistingData({alias, apiUrl, defaultValue});
 			} else {
 				this.state[alias] = sdData;
 			}
@@ -88,7 +88,10 @@ const container = (Target, _dataSchema = []) => {
 		};
 
 		render() {
-			return <Target {...this.state} />;
+			const {serverData, ...restProps} = this.props; // eslint-disable-line
+
+			// restProps is for automatic generated props
+			return <Target {...this.state} {...restProps} />;
 		}
 	};
 };

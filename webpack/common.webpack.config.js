@@ -39,6 +39,7 @@ const common = {
 		},
 		module: {rules: getRules()},
 		plugins: getPlugins(),
+		resolve: getResolve(),
 		devtool: IS_DEV ? 'source-map' : undefined,
 
 		stats: getStats(),
@@ -218,7 +219,6 @@ function getRules() {
 }
 function getPlugins() {
 	return [
-		new DirectoryNamedWebpackPlugin(),
 		new webpack.DefinePlugin({
 			'process.env': {
 				NODE_ENV: JSON.stringify(NODE_ENV),
@@ -228,6 +228,18 @@ function getPlugins() {
 			},
 		}),
 	];
+}
+function getResolve() {
+	return {
+		plugins: [
+			new DirectoryNamedWebpackPlugin({
+				honorIndex: true,
+				ignoreFn: webpackResolveRequest => {
+					return webpackResolveRequest.path.indexOf('node_modules') !== -1;
+				},
+			}),
+		],
+	};
 }
 function getStats() {
 	return {
